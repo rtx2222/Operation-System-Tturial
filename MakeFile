@@ -1,0 +1,14 @@
+all: kernel.bin boot.bin os-image.bin
+
+kernel.bin: kernel.cpp linker.ld
+	g++ -ffreestanding -m64 -c kernel.cpp -o kernel.o
+	ld -m elf_x86_64 -T linker.ld -o kernel.bin kernel.o
+
+boot.bin: boot.asm
+	nasm -f bin boot.asm -o boot.bin
+
+os-image.bin: boot.bin kernel.bin
+	cat boot.bin kernel.bin > os-image.bin
+
+clean:
+	rm -f *.o *.bin
